@@ -12,6 +12,18 @@ def load():
 
     """
     print(logo)
+def check_ip(parts):
+    try:
+        
+        return len(parts) == 4 and all(0 <= int(part) < 256 for part in parts)
+    except ValueError:
+        print("l'IP contient des caractère invalide!")
+        return False 
+    except (AttributeError, TypeError):
+        return False 
+
+
+        
 def check_slash(ip):
     """
     Fonction pour trouver l'ecriture binaire de l'adresse IP entrer par l'utilisateur et renvoyé le binaire, le masque et la classe de l'adresse IP 
@@ -21,47 +33,57 @@ def check_slash(ip):
         ip_bytes = ip.split(".")
         ip_slash = ip_bytes[-1].split("/")[-1]
         ip_bytes[-1] = ip_bytes[-1].split("/")[0]
+        if check_ip(ip_bytes):
 
-        ip_binary = []
-        for i in ip_bytes:
-            ip_binary.append(f"{int(i):08b}")
-        first_four_bytes = ip_binary[0][:4]
-        if first_four_bytes == "0000" or first_four_bytes == "0111":
-            ip_class = "A"
-        elif first_four_bytes == "1000":
-            ip_class = "B"
-        elif first_four_bytes == "1100":
-            ip_class = "C"
-        elif first_four_bytes == "1110":
-            ip_class = "D"
-        else :
-            ip_class = "E"
+            ip_binary = []
+            for i in ip_bytes:
+                ip_binary.append(f"{int(i):08b}")
+            first_four_bytes = ip_binary[0][:4]
+            if first_four_bytes == "0000" or first_four_bytes == "0111":
+                ip_class = "A"
+            elif first_four_bytes == "1000":
+                ip_class = "B"
+            elif first_four_bytes == "1100":
+                ip_class = "C"
+            elif first_four_bytes == "1110":
+                ip_class = "D"
+            else :
+                ip_class = "E"
+            return ip_binary,ip_slash,ip_class
+            
+        else:
+            print("Un octet d'une adresse IP ne peut depasser 255")
+            exit(0)
 
     else:
         # Sinon on accorde un masque par defaut en fonction de la classe
         ip_bytes = ip.split(".")
 
-        ip_binary = []
-        for i in ip_bytes:
-            ip_binary.append(f"{int(i):08b}")
-        first_four_bytes = ip_binary[0][:4]
-        if first_four_bytes == "0000" or first_four_bytes == "0111":
-            ip_class = "A"
-            ip_slash = "8"
-        elif first_four_bytes == "1000":
-            ip_class = "B"
-            ip_slash = "16"
-        elif first_four_bytes == "1100":
-            ip_class = "C"
-            ip_slash = "24"
-        elif first_four_bytes == "1110":
-            ip_class = "D"
-            ip_slash = "4"
-        else :
-            ip_class = "E"
-            ip_slash = "4"
-    return ip_binary,ip_slash,ip_class
+        if check_ip(ip_bytes):
 
+            ip_binary = []
+            for i in ip_bytes:
+                ip_binary.append(f"{int(i):08b}")
+            first_four_bytes = ip_binary[0][:4]
+            if first_four_bytes == "0000" or first_four_bytes == "0111":
+                ip_class = "A"
+                ip_slash = "8"
+            elif first_four_bytes == "1000":
+                ip_class = "B"
+                ip_slash = "16"
+            elif first_four_bytes == "1100":
+                ip_class = "C"
+                ip_slash = "24"
+            elif first_four_bytes == "1110":
+                ip_class = "D"
+                ip_slash = "4"
+            else :
+                ip_class = "E"
+                ip_slash = "4"
+            return ip_binary,ip_slash,ip_class
+        else:
+            print("Un octet d'une adresse IP ne peut depasser 255")
+            exit(0)
 
 def find_network_ip(ip_binary_for_network):
     """
@@ -109,6 +131,7 @@ def transform_all_to_ip(ip_binary_for_network,ip_binary_for_broadcast,ip_binary_
 
 load()
 user_input = input("Entrer une IP: ex(192.168.1.1/8)\n")
+
 
 ip_binary,ip_slash,ip_class = check_slash(ip=user_input)
 
